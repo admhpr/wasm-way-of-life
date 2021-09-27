@@ -2,6 +2,16 @@ mod utils;
 use std::fmt;
 use wasm_bindgen::prelude::*;
 
+
+extern crate web_sys;
+
+// A macro to provide `println!(..)`-style syntax for `console.log` logging.
+macro_rules! log {
+    ( $( $t:tt )* ) => {
+        web_sys::console::log_1(&format!( $( $t )* ).into());
+    }
+}
+
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
 #[cfg(feature = "wee_alloc")]
@@ -49,6 +59,7 @@ impl Universe {
     fn live_neighbour_count(&self, row: u32, column: u32) -> u8 {
         let mut count = 0;
 
+        // setup boundaries positions
         let north = if row == 0 {
             self.height - 1
         } else {
@@ -72,6 +83,15 @@ impl Universe {
         } else {
             column + 1
         };
+
+
+        log!(
+            "north: {} east: {}  south: {} west: {}",
+            north,
+            east,
+            south,
+            west
+        );
 
         let nw = self.get_index(north, west);
         count += self.cells[nw] as u8;
@@ -113,6 +133,14 @@ impl Universe {
                 let cell = self.cells[idx];
                 let live_neighbors = self.live_neighbour_count(row, col);
 
+                log!(
+                    "cell[{}, {}] is initially {:?} and has {} live neighbours",
+                    row,
+                    col,
+                    cell,
+                    live_neighbors
+                );
+
                 let next_cell = match (cell, live_neighbors) {
                     // Rule 1: Any live cell with fewer than two live neighbours
                     // dies, as if caused by underpopulation.
@@ -129,7 +157,7 @@ impl Universe {
                     // All other cells remain in the same state.
                     (otherwise, _) => otherwise,
                 };
-
+                log!("    it becomes {:?}", next_cell);
                 next[idx] = next_cell;
             }
         }
