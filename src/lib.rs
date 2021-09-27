@@ -59,7 +59,7 @@ impl Universe {
     fn live_neighbour_count(&self, row: u32, column: u32) -> u8 {
         let mut count = 0;
 
-        // setup boundaries positions
+        // handle out of bounds
         let north = if row == 0 {
             self.height - 1
         } else {
