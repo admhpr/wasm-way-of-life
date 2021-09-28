@@ -49,6 +49,24 @@ pub struct Universe {
     cells: Vec<Cell>,
 }
 
+// for testing
+impl Universe {
+    /// Get the dead and alive values of the entire universe.
+    pub fn get_cells(&self) -> &[Cell] {
+        &self.cells
+    }
+
+    /// Set cells to be alive in a universe by passing the row and column
+    /// of each cell as an array.
+    pub fn set_cells(&mut self, cells: &[(u32, u32)]) {
+        for (row, col) in cells.iter().cloned() {
+            let idx = self.get_index(row, col);
+            self.cells[idx] = Cell::Alive;
+        }
+    }
+
+}
+
 
 impl Universe {
     // translate the row and column into an index into the cells position
@@ -72,18 +90,19 @@ impl Universe {
             row + 1
         };
 
+        let east = if column == self.width - 1 {
+            0
+        } else {
+            column + 1
+        };
+        
         let west = if column == 0 {
             self.width - 1
         } else {
             column - 1
         };
 
-        let east = if column == self.width - 1 {
-            0
-        } else {
-            column + 1
-        };
-
+        
 
         log!(
             "north: {} east: {}  south: {} west: {}",
