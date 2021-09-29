@@ -64,13 +64,8 @@ impl Universe {
             self.cells[idx] = Cell::Alive;
         }
     }
-
-}
-
-
-impl Universe {
-    // translate the row and column into an index into the cells position
-    fn get_index(&self, row: u32, column: u32) -> usize {
+     // translate the row and column into an index into the cells position
+     fn get_index(&self, row: u32, column: u32) -> usize {
         (row * self.width + column) as usize
     }
     // calculate the next state of a cell, we need to get a count of how many of its neighbours are alive
