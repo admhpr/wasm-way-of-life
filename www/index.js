@@ -6,10 +6,15 @@ const playPauseButton = document.getElementById("play-pause");
 const universe = Universe.new();
 
 let animationId = null;
+const ticksPerFrame = document.getElementById("ticks-per-frame");
 
 function renderLoop(){
     pre.textContent = universe.render();
-    universe.tick();
+    let ticks = 0;
+    while(ticks <= ticksPerFrame.valueAsNumber){
+        universe.tick();
+        ticks += 1
+    }
     animationId = requestAnimationFrame(renderLoop);
 };
 
