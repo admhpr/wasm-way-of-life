@@ -25,18 +25,18 @@ let animationId = null;
 const ticksPerFrame = document.getElementById("ticks-per-frame");
 const playPauseButton = document.getElementById("play-pause");
 
-function renderLoop(){
+function renderLoop() {
     let ticks = 0;
     drawGrid();
     drawCells();
-    while(ticks <= ticksPerFrame.valueAsNumber){
+    while (ticks <= ticksPerFrame.valueAsNumber) {
         universe.tick();
         ticks += 1
     }
     animationId = requestAnimationFrame(renderLoop);
 };
 
-function drawGrid(){
+function drawGrid() {
     ctx.beginPath();
     ctx.strokeStyle = GRID_COLOR;
 
@@ -60,12 +60,14 @@ function drawCells() {
 
     ctx.beginPath();
 
-    for (let row = 0; row < height; row++) {
-        for (let col = 0; col < width; col++) {
+    // draw all ALIVE cells in one pass
+    ctx.fillStyle = ALIVE_COLOR;
+    for (let row = 0; row < height; ++row) {
+        for (let col = 0; col < width; ++col) {
             const idx = getIndex(row, col);
-            ctx.fillStyle = cells[idx] === Cell.Dead
-                ? DEAD_COLOR
-                : ALIVE_COLOR;
+            if (!bitIsSet(idx, cells)) {
+                continue;
+            }
 
             ctx.fillRect(
                 col * (CELL_SIZE + 1) + 1,
@@ -75,24 +77,43 @@ function drawCells() {
             );
         }
     }
+
+    // draw all DEAD cells in one pass
+    ctx.fillStyle = DEAD_COLOR;
+    for (let row = 0; row < height; ++row) {
+        for (let col = 0; col < width; ++col) {
+            const idx = getIndex(row, col);
+            if (bitIsSet(idx, cells)) {
+                continue;
+            }
+
+            ctx.fillRect(
+                col * (CELL_SIZE + 1) + 1,
+                row * (CELL_SIZE + 1) + 1,
+                CELL_SIZE,
+                CELL_SIZE
+            );
+        }
+    }
+
     ctx.stroke();
 }
 
 
-function getIndex(row, column){
+function getIndex(row, column) {
     return row * width + column;
 }
-function isPaused(){
+function isPaused() {
     return animationId === null
 }
 
-function pause(){
+function pause() {
     playPauseButton.textContent = "▶";
     cancelAnimationFrame(animationId);
     animationId = null;
 }
 
-function play(){
+function play() {
     playPauseButton.textContent = "⏸";
     renderLoop();
 }
