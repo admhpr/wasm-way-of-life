@@ -29,10 +29,7 @@ function renderLoop() {
     let ticks = 0;
     drawGrid();
     drawCells();
-    while (ticks <= ticksPerFrame.valueAsNumber) {
-        universe.tick();
-        ticks += 1
-    }
+    universe.tick();
     animationId = requestAnimationFrame(renderLoop);
 };
 
@@ -60,12 +57,12 @@ function drawCells() {
 
     ctx.beginPath();
 
-    // draw all ALIVE cells in one pass
+    // set all ALIVE cells in one pass
     ctx.fillStyle = ALIVE_COLOR;
-    for (let row = 0; row < height; ++row) {
-        for (let col = 0; col < width; ++col) {
+    for (let row = 0; row < height; row++) {
+        for (let col = 0; col < width; col++) {
             const idx = getIndex(row, col);
-            if (!bitIsSet(idx, cells)) {
+            if (cells[idx] !== Cell.Alive) {
                 continue;
             }
 
@@ -78,12 +75,12 @@ function drawCells() {
         }
     }
 
-    // draw all DEAD cells in one pass
+    // set all DEAD cells in one pass
     ctx.fillStyle = DEAD_COLOR;
-    for (let row = 0; row < height; ++row) {
-        for (let col = 0; col < width; ++col) {
+    for (let row = 0; row < height; row++) {
+        for (let col = 0; col < width; col++) {
             const idx = getIndex(row, col);
-            if (bitIsSet(idx, cells)) {
+            if (cells[idx] !== Cell.Dead) {
                 continue;
             }
 
@@ -95,7 +92,6 @@ function drawCells() {
             );
         }
     }
-
     ctx.stroke();
 }
 
@@ -103,6 +99,7 @@ function drawCells() {
 function getIndex(row, column) {
     return row * width + column;
 }
+
 function isPaused() {
     return animationId === null
 }
